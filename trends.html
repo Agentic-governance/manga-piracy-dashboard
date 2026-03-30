@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MANGA SHIELD — Trend Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-0:#020508;--bg-1:#060b12;--bg-2:#0c1420;--bg-3:#131d2e;
+  --text-1:#dce8f8;--text-2:#7a9bbf;--text-3:#3d5470;
+  --primary:#1a8cff;--secondary:#6b4fff;--accent:#00e5cc;
+  --danger:#ff3344;--warning:#ffaa00;--success:#00cc7a;
+  --font-sans:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);line-height:1.6;min-height:100vh}
+a{color:var(--primary);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* NAVBAR */
+.navbar{position:sticky;top:0;z-index:100;background:rgba(6,11,18,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(26,140,255,.12);padding:0 2rem;display:flex;align-items:center;height:56px;gap:1.5rem}
+.navbar-logo{display:flex;align-items:center;gap:.6rem;font-weight:700;font-size:1.1rem;letter-spacing:.04em;color:var(--text-1);flex-shrink:0}
+.navbar-logo svg{width:28px;height:28px}
+.navbar-links{display:flex;gap:.25rem;margin-left:1rem}
+.navbar-links a{padding:.4rem .75rem;border-radius:6px;font-size:.82rem;font-weight:500;color:var(--text-2);transition:all .2s}
+.navbar-links a:hover,.navbar-links a.active{background:rgba(26,140,255,.12);color:var(--primary);text-decoration:none}
+.navbar-right{margin-left:auto;display:flex;align-items:center;gap:1rem;font-size:.78rem}
+.badge{padding:.2rem .55rem;border-radius:20px;font-weight:600;font-family:var(--font-mono);font-size:.7rem}
+.badge-threat{background:rgba(255,51,68,.15);color:var(--danger);border:1px solid rgba(255,51,68,.3)}
+.badge-fresh{background:rgba(0,229,204,.1);color:var(--accent);border:1px solid rgba(0,229,204,.25)}
+.btn-export{padding:.35rem .8rem;border-radius:6px;background:rgba(26,140,255,.12);color:var(--primary);border:1px solid rgba(26,140,255,.25);cursor:pointer;font-size:.78rem;font-weight:500;font-family:var(--font-sans);transition:all .2s}
+.btn-export:hover{background:rgba(26,140,255,.22)}
+
+/* LAYOUT */
+.page-wrap{max-width:1400px;margin:0 auto;padding:2rem}
+.page-header{margin-bottom:2.5rem}
+.page-header h1{font-size:1.8rem;font-weight:800;letter-spacing:.06em;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text-2);font-size:.92rem;margin-top:.3rem}
+
+.card{background:var(--bg-2);border:1px solid rgba(26,140,255,.08);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.card-title{font-size:1rem;font-weight:700;margin-bottom:.2rem;display:flex;align-items:center;gap:.5rem}
+.card-title .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.card-subtitle{font-size:.8rem;color:var(--text-3);margin-bottom:1rem;font-family:var(--font-mono)}
+.chart-wrap{position:relative;width:100%;height:380px}
+.chart-wrap-sm{height:300px}
+.insight{margin-top:1rem;padding:.8rem 1rem;background:var(--bg-3);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text-2)}
+.insight strong{color:var(--text-1)}
+
+/* FORECAST TABLE */
+.forecast-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.forecast-table th{text-align:left;padding:.55rem .75rem;color:var(--text-3);font-weight:600;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--bg-3)}
+.forecast-table td{padding:.55rem .75rem;border-bottom:1px solid rgba(26,140,255,.05)}
+.forecast-table tr:hover td{background:rgba(26,140,255,.04)}
+.forecast-table .mono{font-family:var(--font-mono);font-size:.82rem}
+.disclaimer{margin-top:1rem;padding:.6rem .8rem;background:rgba(255,170,0,.06);border:1px solid rgba(255,170,0,.15);border-radius:8px;font-size:.78rem;color:var(--warning);font-family:var(--font-mono)}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.kpi-card{background:var(--bg-2);border:1px solid rgba(26,140,255,.08);border-radius:12px;padding:1.25rem;text-align:center}
+.kpi-card .label{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-2);margin-bottom:0.35rem}
+.kpi-card .value{font-size:2rem;font-weight:800;font-family:var(--font-mono)}
+
+/* PRINT */
+@media print{
+  body{background:#fff;color:#111}
+  .navbar{display:none}
+  .card{border:1px solid #ccc;break-inside:avoid}
+  .insight{border-left-color:#1a8cff;background:#f0f4f8}
+  .chart-wrap,.chart-wrap-sm{height:280px}
+  .page-header h1{-webkit-text-fill-color:#1a8cff}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-logo">
+    <svg viewBox="0 0 32 32" fill="none"><rect x="3" y="2" width="26" height="28" rx="3" stroke="var(--primary)" stroke-width="1.5" fill="rgba(26,140,255,.1)"/><path d="M9 8h14M9 12h14M9 16h10" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="22" r="6" fill="rgba(0,229,204,.2)" stroke="var(--accent)" stroke-width="1.5"/><path d="M20 22l1.5 1.5L24 20.5" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    MANGA SHIELD
+  </div>
+  <div class="navbar-links">
+    <a href="enforcement.html">Enforcement</a>
+    <a href="titles.html">Titles</a>
+    <a href="trends.html" class="active">Trends</a>
+    <a href="regions.html">Regions</a>
+  </div>
+  <div class="navbar-right">
+    <span class="badge badge-threat">THREAT: CRITICAL</span>
+    <span class="badge badge-fresh">v11 FINAL</span>
+    <button class="btn-export" onclick="window.print()">Export PDF</button>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="page-wrap">
+
+  <div class="page-header">
+    <h1>TREND ANALYSIS</h1>
+    <p>Content Distribution &times; Dataset Growth &times; Publisher Coverage</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="label">Manga URLs</div><div class="value" style="color:var(--primary)">5.25M</div></div>
+    <div class="kpi-card"><div class="label">Doujinshi URLs</div><div class="value" style="color:var(--secondary)">1.87M</div></div>
+    <div class="kpi-card"><div class="label">Domain Growth v10→v11</div><div class="value" style="color:var(--success)">+55%</div></div>
+    <div class="kpi-card"><div class="label">Content Types</div><div class="value" style="color:var(--accent)">8</div></div>
+  </div>
+
+  <!-- 1. Content Type Distribution -->
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Content Type Distribution</div>
+    <div class="card-subtitle">7.63M total pirate URLs by content category</div>
+    <div class="chart-wrap"><canvas id="chartContentType"></canvas></div>
+    <div class="insight"><strong>Manga dominates at 68.8%</strong> (5.25M URLs), followed by doujinshi at 24.5% (1.87M). Manhwa represents a growing 3.4% segment driven by Korean webtoon piracy. Gravure, magazine, and adult content collectively make up 2.7%.</div>
+  </div>
+
+  <div class="grid-2">
+
+  <!-- 2. Domain Growth -->
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--success)"></span>Domain Discovery Growth</div>
+    <div class="card-subtitle">Tracked pirate domains by dataset version</div>
+    <div class="chart-wrap chart-wrap-sm"><canvas id="chartDomainGrowth"></canvas></div>
+    <div class="insight"><strong>55% growth from v10.1 to v11.</strong> Domain count increased from 1,608 to 2,491 through improved crawler coverage and CJK title dictionary expansion.</div>
+  </div>
+
+  <!-- 3. Publisher Coverage -->
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--warning)"></span>Publisher Attribution Rate</div>
+    <div class="card-subtitle">% of URLs with identified publisher</div>
+    <div class="chart-wrap chart-wrap-sm"><canvas id="chartPubCoverage"></canvas></div>
+    <div class="insight"><strong>40.6% of URLs still lack publisher attribution</strong> (blank field) plus 14.4% marked "Unknown." Enrichment pipeline improvements target reducing unknown to under 20% by v12.</div>
+  </div>
+
+  </div>
+
+  <!-- 4. Top Publishers Trend -->
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--danger)"></span>Publisher Exposure Breakdown</div>
+    <div class="card-subtitle">Pirate URLs by top publishers &mdash; Japan vs Korea vs China vs Other</div>
+    <div class="chart-wrap"><canvas id="chartPublisherBreak"></canvas></div>
+    <div class="insight"><strong>Japanese publishers account for 54% of attributed pirate URLs</strong> (2.43M). Korean platforms (Kakao, Naver) follow at 23% (1.04M), with Chinese platforms (Kuaikan, Bilibili, Tencent) at 7%.</div>
+  </div>
+
+  <!-- 5. Version Comparison Table -->
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--accent)"></span>Dataset Version Comparison</div>
+    <div class="card-subtitle">Key metrics across enforcement master versions</div>
+    <table class="forecast-table">
+      <thead>
+        <tr><th>Metric</th><th>v10.1</th><th>v10.5</th><th>v11 FINAL</th><th>Change</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Total URLs</td>
+          <td class="mono">4.2M</td>
+          <td class="mono">5.8M</td>
+          <td class="mono" style="color:var(--primary)">7.63M</td>
+          <td class="mono" style="color:var(--success)">+81.7%</td>
+        </tr>
+        <tr>
+          <td>Pirate Domains</td>
+          <td class="mono">1,608</td>
+          <td class="mono">2,012</td>
+          <td class="mono" style="color:var(--primary)">2,491</td>
+          <td class="mono" style="color:var(--success)">+54.8%</td>
+        </tr>
+        <tr>
+          <td>Publishers Identified</td>
+          <td class="mono">~80</td>
+          <td class="mono">~120</td>
+          <td class="mono" style="color:var(--primary)">3,103</td>
+          <td class="mono" style="color:var(--success)">+3,776%</td>
+        </tr>
+        <tr>
+          <td>Content Types</td>
+          <td class="mono">3</td>
+          <td class="mono">5</td>
+          <td class="mono" style="color:var(--primary)">8</td>
+          <td class="mono" style="color:var(--success)">+167%</td>
+        </tr>
+        <tr>
+          <td>Publisher Attribution Rate</td>
+          <td class="mono">32%</td>
+          <td class="mono">41%</td>
+          <td class="mono" style="color:var(--primary)">59.4%</td>
+          <td class="mono" style="color:var(--success)">+85.6%</td>
+        </tr>
+        <tr>
+          <td>CJK Title Coverage</td>
+          <td class="mono">Low</td>
+          <td class="mono">Medium</td>
+          <td class="mono" style="color:var(--primary)">High</td>
+          <td class="mono" style="color:var(--success)">Dict expansion</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="disclaimer">[NOTE] v10.x publisher counts based on manual curation. v11 uses automated enrichment pipeline with MangaUpdates, AniList, and manual CJK patches. Raw publisher count (3,103) includes imprint/variant names.</div>
+  </div>
+
+</div>
+
+<script>
+Chart.defaults.color='#7a9bbf';
+Chart.defaults.borderColor='rgba(26,140,255,.08)';
+Chart.defaults.font.family="'Inter',sans-serif";
+Chart.defaults.font.size=11;
+
+/* ===== 1. CONTENT TYPE DISTRIBUTION ===== */
+new Chart(document.getElementById('chartContentType').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels:['Manga','Doujinshi','Manhwa','Gravure','Magazine','Adult','Novel','Other'],
+    datasets:[{
+      label:'Pirate URLs',
+      data:[5247670,1868462,260309,76850,68959,60242,45135,136],
+      backgroundColor:[
+        'rgba(26,140,255,.7)',
+        'rgba(107,79,255,.7)',
+        'rgba(0,229,204,.7)',
+        'rgba(255,170,0,.6)',
+        'rgba(255,51,68,.5)',
+        'rgba(122,155,191,.5)',
+        'rgba(0,204,122,.5)',
+        'rgba(61,84,112,.4)'
+      ],
+      borderRadius:6,
+      barPercentage:0.7
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{
+        label:ctx=>{
+          const val=ctx.parsed.y;
+          const pct=(val/7627763*100).toFixed(1);
+          return `${(val/1000000).toFixed(2)}M URLs (${pct}%)`;
+        }
+      }}
+    },
+    scales:{
+      x:{ticks:{color:'#7a9bbf',font:{size:12}},grid:{display:false}},
+      y:{ticks:{color:'#3d5470',callback:v=>(v/1000000).toFixed(1)+'M'},grid:{color:'rgba(26,140,255,.06)'}}
+    }
+  }
+});
+
+/* ===== 2. DOMAIN GROWTH ===== */
+new Chart(document.getElementById('chartDomainGrowth').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels:['v10.1','v10.2','v10.3','v10.4','v10.5','v11 FINAL'],
+    datasets:[{
+      label:'Pirate Domains',
+      data:[1608,1720,1845,1932,2012,2491],
+      backgroundColor:[
+        'rgba(26,140,255,.4)',
+        'rgba(26,140,255,.45)',
+        'rgba(26,140,255,.5)',
+        'rgba(26,140,255,.55)',
+        'rgba(26,140,255,.6)',
+        'rgba(0,229,204,.7)'
+      ],
+      borderRadius:6,
+      barPercentage:0.65
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{display:false}},
+      y:{min:1000,grid:{color:'rgba(26,140,255,.06)'},ticks:{callback:v=>v.toLocaleString()}}
+    }
+  }
+});
+
+/* ===== 3. PUBLISHER COVERAGE ===== */
+new Chart(document.getElementById('chartPubCoverage').getContext('2d'),{
+  type:'doughnut',
+  data:{
+    labels:['Known Publisher','Unknown','Unattributed (blank)'],
+    datasets:[{
+      data:[3430678,1101650,3095435],
+      backgroundColor:['rgba(0,204,122,.7)','rgba(255,170,0,.6)','rgba(255,51,68,.5)'],
+      borderWidth:0
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    cutout:'55%',
+    plugins:{
+      legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8,padding:14,font:{size:11}}},
+      tooltip:{callbacks:{
+        label:ctx=>{
+          const val=ctx.parsed;
+          const pct=(val/7627763*100).toFixed(1);
+          return `${(val/1000000).toFixed(2)}M URLs (${pct}%)`;
+        }
+      }}
+    }
+  }
+});
+
+/* ===== 4. PUBLISHER BREAKDOWN ===== */
+const jpPubs = [
+  {name:'Shueisha',urls:310927},
+  {name:'Kodansha',urls:288491},
+  {name:'KADOKAWA',urls:241820},
+  {name:'Shogakukan',urls:223139},
+  {name:'Square Enix',urls:83839},
+  {name:'Akita Shoten',urls:67861},
+  {name:'Hakusensha',urls:66928},
+  {name:'Ichijinsha',urls:58156},
+  {name:'Tokuma Shoten',urls:56530},
+  {name:'Futabasha',urls:46667},
+  {name:'Houbunsha',urls:45653},
+  {name:'Other JP',urls:340000}
+];
+const krPubs = [
+  {name:'Kakao',urls:169867},
+  {name:'Naver Webtoon',urls:127096},
+  {name:'Kakao/Naver',urls:107612},
+  {name:'Naver',urls:64156},
+  {name:'Lezhin',urls:44734},
+  {name:'RIDI',urls:22326},
+  {name:'Toomics',urls:18080},
+  {name:'BomToon',urls:17482},
+  {name:'Tappytoon',urls:15511},
+  {name:'Topcomics',urls:13345},
+  {name:'Tapas',urls:12767}
+];
+const cnPubs = [
+  {name:'Kuaikan',urls:73369},
+  {name:'Bilibili',urls:41009},
+  {name:'Tencent',urls:28506},
+  {name:'Bilibili/Tencent',urls:13862},
+  {name:'Qidian',urls:11715}
+];
+
+const jpTotal = jpPubs.reduce((s,p)=>s+p.urls,0);
+const krTotal = krPubs.reduce((s,p)=>s+p.urls,0);
+const cnTotal = cnPubs.reduce((s,p)=>s+p.urls,0);
+const indTotal = 178705 + 80696; // Doujin + Adult Independent
+const otherTotal = 3430678 - jpTotal - krTotal - cnTotal - indTotal;
+
+new Chart(document.getElementById('chartPublisherBreak').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels:['Japan','Korea','China','Independent','Other'],
+    datasets:[{
+      label:'Pirate URLs (attributed)',
+      data:[jpTotal,krTotal,cnTotal,indTotal,Math.max(0,otherTotal)],
+      backgroundColor:[
+        'rgba(255,51,68,.6)',
+        'rgba(26,140,255,.6)',
+        'rgba(255,170,0,.6)',
+        'rgba(107,79,255,.5)',
+        'rgba(122,155,191,.4)'
+      ],
+      borderRadius:6,
+      barPercentage:0.6
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{
+        label:ctx=>{
+          const val=ctx.parsed.y;
+          return `${(val/1000).toFixed(0)}K URLs`;
+        }
+      }}
+    },
+    scales:{
+      x:{ticks:{color:'#7a9bbf',font:{size:12}},grid:{display:false}},
+      y:{ticks:{color:'#3d5470',callback:v=>(v/1000)+'K'},grid:{color:'rgba(26,140,255,.06)'}}
+    }
+  }
+});
+</script>
+</body>
+</html>

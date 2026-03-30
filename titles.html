@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MANGA SHIELD — Title Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-0:#020508;--bg-1:#060b12;--bg-2:#0c1420;--bg-3:#131d2e;
+  --text-1:#dce8f8;--text-2:#7a9bbf;--text-3:#3d5470;
+  --primary:#1a8cff;--secondary:#6b4fff;--accent:#00e5cc;
+  --danger:#ff3344;--warning:#ffaa00;--success:#00cc7a;
+  --font-sans:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);line-height:1.6;min-height:100vh}
+a{color:var(--primary);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* NAVBAR */
+.navbar{position:sticky;top:0;z-index:100;background:rgba(6,11,18,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(26,140,255,.12);padding:0 2rem;display:flex;align-items:center;height:56px;gap:1.5rem}
+.navbar-logo{display:flex;align-items:center;gap:.6rem;font-weight:700;font-size:1.1rem;letter-spacing:.04em;color:var(--text-1);flex-shrink:0}
+.navbar-logo svg{width:28px;height:28px}
+.navbar-links{display:flex;gap:.25rem;margin-left:1rem}
+.navbar-links a{padding:.4rem .75rem;border-radius:6px;font-size:.82rem;font-weight:500;color:var(--text-2);transition:all .2s}
+.navbar-links a:hover,.navbar-links a.active{background:rgba(26,140,255,.12);color:var(--primary);text-decoration:none}
+.navbar-right{margin-left:auto;display:flex;align-items:center;gap:1rem;font-size:.78rem}
+.badge{padding:.2rem .55rem;border-radius:20px;font-weight:600;font-family:var(--font-mono);font-size:.7rem}
+.badge-threat{background:rgba(255,51,68,.15);color:var(--danger);border:1px solid rgba(255,51,68,.3)}
+.badge-fresh{background:rgba(0,229,204,.1);color:var(--accent);border:1px solid rgba(0,229,204,.25)}
+.btn-export{padding:.35rem .8rem;border-radius:6px;background:rgba(26,140,255,.12);color:var(--primary);border:1px solid rgba(26,140,255,.25);cursor:pointer;font-size:.78rem;font-weight:500;font-family:var(--font-sans);transition:all .2s}
+.btn-export:hover{background:rgba(26,140,255,.22)}
+
+/* LAYOUT */
+.page-wrap{max-width:1400px;margin:0 auto;padding:2rem}
+.page-header{margin-bottom:2.5rem}
+.page-header h1{font-size:1.8rem;font-weight:800;letter-spacing:.06em;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text-2);font-size:.92rem;margin-top:.3rem}
+
+.card{background:var(--bg-2);border:1px solid rgba(26,140,255,.08);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.card-title{font-size:1rem;font-weight:700;margin-bottom:.2rem;display:flex;align-items:center;gap:.5rem}
+.card-title .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.card-subtitle{font-size:.8rem;color:var(--text-3);margin-bottom:1rem;font-family:var(--font-mono)}
+.chart-wrap{position:relative;width:100%;height:380px}
+.chart-wrap-tall{height:520px}
+.insight{margin-top:1rem;padding:.8rem 1rem;background:var(--bg-3);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text-2)}
+.insight strong{color:var(--text-1)}
+
+/* VULNERABILITY BARS */
+.vuln-chart{display:flex;flex-direction:column;gap:.45rem}
+.vuln-row{display:flex;align-items:center;gap:.75rem;font-size:.82rem}
+.vuln-label{width:200px;text-align:right;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vuln-pub{width:110px;font-family:var(--font-mono);font-size:.72rem;flex-shrink:0;text-align:center;padding:.15rem .4rem;border-radius:4px}
+.vuln-bar-wrap{flex:1;height:22px;background:var(--bg-3);border-radius:4px;overflow:hidden;position:relative}
+.vuln-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:.5rem;font-size:.72rem;font-family:var(--font-mono);color:var(--text-1);font-weight:600;min-width:40px;transition:width .6s ease}
+.vuln-note{margin-top:.75rem;font-size:.78rem;color:var(--text-3);font-style:italic}
+
+/* Publisher colors */
+.pub-shueisha{background:rgba(255,51,68,.2);color:var(--danger);border:1px solid rgba(255,51,68,.3)}
+.pub-kodansha{background:rgba(26,140,255,.15);color:var(--primary);border:1px solid rgba(26,140,255,.3)}
+.pub-kadokawa{background:rgba(107,79,255,.15);color:var(--secondary);border:1px solid rgba(107,79,255,.3)}
+.pub-shogakukan{background:rgba(0,204,122,.12);color:var(--success);border:1px solid rgba(0,204,122,.3)}
+.pub-sqenix{background:rgba(255,170,0,.15);color:var(--warning);border:1px solid rgba(255,170,0,.3)}
+.pub-other{background:rgba(122,155,191,.12);color:var(--text-2);border:1px solid rgba(122,155,191,.3)}
+
+/* TABLE */
+.data-table-wrap{overflow-x:auto}
+.data-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.data-table th{text-align:left;padding:.6rem .6rem;color:var(--text-3);font-weight:600;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--bg-3);cursor:pointer;user-select:none;white-space:nowrap;position:relative}
+.data-table th:hover{color:var(--primary)}
+.data-table th .sort-arrow{margin-left:.3rem;font-size:.65rem;opacity:.5}
+.data-table th.sorted .sort-arrow{opacity:1;color:var(--primary)}
+.data-table td{padding:.5rem .6rem;border-bottom:1px solid rgba(26,140,255,.04)}
+.data-table tr:hover td{background:rgba(26,140,255,.04)}
+.data-table .mono{font-family:var(--font-mono)}
+.sev{display:inline-block;width:22px;height:22px;border-radius:4px;text-align:center;line-height:22px;font-weight:700;font-size:.72rem;font-family:var(--font-mono)}
+.sev-5{background:rgba(255,51,68,.2);color:var(--danger)}
+.sev-4{background:rgba(255,170,0,.15);color:var(--warning)}
+.sev-3{background:rgba(26,140,255,.15);color:var(--primary)}
+.sev-2{background:rgba(122,155,191,.12);color:var(--text-2)}
+
+/* COST BENEFIT */
+.cost-panel{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem}
+.cost-card{background:var(--bg-3);border-radius:10px;padding:1.2rem;text-align:center}
+.cost-card .cc-label{font-size:.75rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+.cost-card .cc-val{font-size:1.5rem;font-weight:800;font-family:var(--font-mono)}
+.cost-card .cc-sub{font-size:.78rem;color:var(--text-2);margin-top:.3rem}
+@media(max-width:700px){.cost-panel{grid-template-columns:1fr}}
+
+/* PRINT */
+@media print{
+  body{background:#fff;color:#111}
+  .navbar{display:none}
+  .card{border:1px solid #ccc;break-inside:avoid}
+  .insight{border-left-color:#1a8cff;background:#f0f4f8}
+  .chart-wrap,.chart-wrap-tall{height:300px}
+  .page-header h1{-webkit-text-fill-color:#1a8cff}
+  .vuln-bar-wrap{background:#e8e8e8}
+  .cost-card{background:#f4f6f8}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-logo">
+    <svg viewBox="0 0 32 32" fill="none"><rect x="3" y="2" width="26" height="28" rx="3" stroke="var(--primary)" stroke-width="1.5" fill="rgba(26,140,255,.1)"/><path d="M9 8h14M9 12h14M9 16h10" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="22" r="6" fill="rgba(0,229,204,.2)" stroke="var(--accent)" stroke-width="1.5"/><path d="M20 22l1.5 1.5L24 20.5" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    MANGA SHIELD
+  </div>
+  <div class="navbar-links">
+    <a href="enforcement.html">Enforcement</a>
+    <a href="titles.html" class="active">Titles</a>
+    <a href="trends.html">Trends</a>
+    <a href="regions.html">Regions</a>
+  </div>
+  <div class="navbar-right">
+    <span class="badge badge-threat">THREAT: CRITICAL</span>
+    <span class="badge badge-fresh">v11 FINAL</span>
+    <button class="btn-export" onclick="window.print()">Export PDF</button>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="page-wrap">
+
+  <div class="page-header">
+    <h1>TITLE TRACKER</h1>
+    <p>Most Pirated Manga Titles &times; Publisher Vulnerability Analysis</p>
+  </div>
+
+  <!-- 1. Most Pirated Titles Scatter -->
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Piracy Exposure by Title</div>
+    <div class="card-subtitle">X: Pirate Domain Count &middot; Y: URL Count &middot; Color: Publisher</div>
+    <div class="chart-wrap"><canvas id="chartScatter"></canvas></div>
+    <div class="insight"><strong>ONE PIECE variants appear on 117-122 pirate domains</strong> -- the most exposed title. Shueisha titles dominate the high-exposure quadrant, followed by Kodansha. Doujinshi variants often appear alongside official manga entries.</div>
+  </div>
+
+  <!-- 2. Publisher Vulnerability -->
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--warning)"></span>Publisher Vulnerability Ranking</div>
+    <div class="card-subtitle">Pirate URLs by publisher (top 15) &mdash; sorted by total exposure</div>
+    <div class="vuln-chart" id="vulnChart"></div>
+    <div class="vuln-note">Shueisha, Kodansha, KADOKAWA, and Shogakukan together account for 1.06M pirate URLs -- 14% of total indexed URLs. Unknown/unattributed URLs (4.2M) represent the largest enforcement gap.</div>
+  </div>
+
+  <!-- 3. Top 50 Most Pirated Titles -->
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--danger)"></span>Top 50 Most Pirated Manga Titles</div>
+    <div class="card-subtitle">Ranked by number of pirate domains hosting each work &mdash; click headers to sort</div>
+    <div class="data-table-wrap">
+      <table class="data-table" id="titlesTable">
+        <thead>
+          <tr>
+            <th data-col="rank" data-type="num">Rank <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="title" data-type="str">Title <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="publisher" data-type="str">Publisher <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="domains" data-type="num">Domains <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="urls" data-type="num">URLs <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="type" data-type="str">Content Type <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="sev" data-type="num">Sev <span class="sort-arrow">&#9650;</span></th>
+          </tr>
+        </thead>
+        <tbody id="titlesBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 4. Impact Summary -->
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--success)"></span>Piracy Impact Summary</div>
+    <div class="card-subtitle">Key metrics from enforcement_master_v11_FINAL</div>
+    <div class="cost-panel">
+      <div class="cost-card">
+        <div class="cc-label">Total Pirate URLs</div>
+        <div class="cc-val" style="color:var(--danger)">7.63M</div>
+        <div class="cc-sub">Across 2,491 domains<br>Avg <strong style="color:var(--danger)">3,062</strong> URLs per domain</div>
+      </div>
+      <div class="cost-card">
+        <div class="cc-label">Most Exposed Title</div>
+        <div class="cc-val" style="color:var(--warning)">124</div>
+        <div class="cc-sub">Pirate domains hosting<br><strong style="color:var(--warning)">Rent-a-Girlfriend</strong> (doujinshi)</div>
+      </div>
+      <div class="cost-card">
+        <div class="cc-label">Publisher Coverage</div>
+        <div class="cc-val" style="color:var(--accent)">59.4%</div>
+        <div class="cc-sub">URLs with known publisher<br><strong style="color:var(--accent)">4.53M</strong> of 7.63M total</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+Chart.defaults.color='#7a9bbf';
+Chart.defaults.borderColor='rgba(26,140,255,.08)';
+Chart.defaults.font.family="'Inter',sans-serif";
+Chart.defaults.font.size=11;
+
+/* ===== SCATTER CHART ===== */
+const scatterData=[
+  {title:'Rent-a-Girlfriend',pub:'Kodansha',domains:124,urls:124,color:'rgba(26,140,255,.7)'},
+  {title:'One Punch Man',pub:'Shueisha',domains:122,urls:122,color:'rgba(255,51,68,.7)'},
+  {title:'ONE PIECE',pub:'Shueisha',domains:117,urls:117,color:'rgba(255,51,68,.7)'},
+  {title:'Nagatoro-san',pub:'Kodansha',domains:115,urls:115,color:'rgba(26,140,255,.7)'},
+  {title:'Kingdom',pub:'Shueisha',domains:114,urls:114,color:'rgba(255,51,68,.7)'},
+  {title:'Black Clover',pub:'Shueisha',domains:111,urls:111,color:'rgba(255,51,68,.7)'},
+  {title:'Blue Lock',pub:'Kodansha',domains:100,urls:100,color:'rgba(26,140,255,.7)'},
+  {title:'Kagurabachi',pub:'Shueisha',domains:99,urls:99,color:'rgba(255,51,68,.7)'},
+  {title:'H2',pub:'Shogakukan',domains:97,urls:97,color:'rgba(0,204,122,.7)'},
+  {title:'Chainsaw Man',pub:'Shueisha',domains:95,urls:95,color:'rgba(255,51,68,.7)'},
+  {title:'Wind Breaker',pub:'Kodansha',domains:92,urls:92,color:'rgba(26,140,255,.7)'},
+  {title:'Goblin Slayer',pub:'Square Enix',domains:91,urls:91,color:'rgba(255,170,0,.7)'},
+  {title:'Sakamoto Days',pub:'Shueisha',domains:90,urls:90,color:'rgba(255,51,68,.7)'},
+  {title:'Naruto',pub:'Shueisha',domains:84,urls:84,color:'rgba(255,51,68,.7)'},
+  {title:'Made In Abyss',pub:'Takeshobo',domains:84,urls:84,color:'rgba(122,155,191,.7)'},
+  {title:'Slime Tensei',pub:'Micro Mag',domains:84,urls:84,color:'rgba(122,155,191,.7)'},
+  {title:'Edens Zero',pub:'Kodansha',domains:81,urls:81,color:'rgba(26,140,255,.7)'},
+  {title:'My Hero Academia',pub:'Shueisha',domains:80,urls:80,color:'rgba(255,51,68,.7)'},
+  {title:'Golden Kamuy',pub:'Shueisha',domains:78,urls:78,color:'rgba(255,51,68,.7)'},
+  {title:'Dandadan',pub:'Shueisha',domains:78,urls:78,color:'rgba(255,51,68,.7)'}
+];
+
+const pubColors = {
+  'Shueisha':'rgba(255,51,68,.5)',
+  'Kodansha':'rgba(26,140,255,.5)',
+  'Square Enix':'rgba(255,170,0,.5)',
+  'Shogakukan':'rgba(0,204,122,.5)',
+  'KADOKAWA':'rgba(107,79,255,.5)'
+};
+
+new Chart(document.getElementById('chartScatter').getContext('2d'),{
+  type:'bubble',
+  data:{
+    datasets: scatterData.map(d=>({
+      label:d.title,
+      data:[{x:d.domains,y:d.urls,r:Math.max(6,d.domains/10)}],
+      backgroundColor:d.color.replace(/[\d.]+\)$/,'.35)'),
+      borderColor:d.color,
+      borderWidth:2
+    }))
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{
+          title:ctx=>{const d=scatterData[ctx[0].datasetIndex]; return d.title;},
+          label:ctx=>{const d=scatterData[ctx.datasetIndex]; return [
+            `Publisher: ${d.pub}`,
+            `Pirate Domains: ${d.domains}`,
+            `Total URLs: ${d.urls}`
+          ];}
+        }
+      }
+    },
+    scales:{
+      x:{title:{display:true,text:'Number of Pirate Domains'},grid:{color:'rgba(26,140,255,.06)'}},
+      y:{title:{display:true,text:'Total Pirate URLs'},grid:{color:'rgba(26,140,255,.06)'},min:60}
+    }
+  }
+});
+
+/* ===== VULNERABILITY BARS ===== */
+const vulnData=[
+  {name:'Shueisha (集英社)',urls:310927,works:118902,cls:'pub-shueisha',color:'rgba(255,51,68,.6)'},
+  {name:'Kodansha (講談社)',urls:288491,works:88585,cls:'pub-kodansha',color:'rgba(26,140,255,.6)'},
+  {name:'KADOKAWA',urls:241820,works:60416,cls:'pub-kadokawa',color:'rgba(107,79,255,.55)'},
+  {name:'Shogakukan (小学館)',urls:223139,works:84547,cls:'pub-shogakukan',color:'rgba(0,204,122,.5)'},
+  {name:'Doujin/Independent',urls:178705,works:167079,cls:'pub-other',color:'rgba(122,155,191,.5)'},
+  {name:'Kakao',urls:169867,works:45739,cls:'pub-other',color:'rgba(122,155,191,.45)'},
+  {name:'Naver Webtoon',urls:127096,works:33601,cls:'pub-other',color:'rgba(122,155,191,.4)'},
+  {name:'Kakao/Naver',urls:107612,works:44954,cls:'pub-other',color:'rgba(122,155,191,.35)'},
+  {name:'Square Enix',urls:83839,works:22733,cls:'pub-sqenix',color:'rgba(255,170,0,.5)'},
+  {name:'Adult Independent',urls:80696,works:74454,cls:'pub-other',color:'rgba(122,155,191,.3)'},
+  {name:'Kuaikan',urls:73369,works:20673,cls:'pub-other',color:'rgba(122,155,191,.3)'},
+  {name:'Akita Shoten (秋田書店)',urls:67861,works:20687,cls:'pub-shueisha',color:'rgba(255,51,68,.4)'},
+  {name:'Hakusensha (白泉社)',urls:66928,works:19261,cls:'pub-shogakukan',color:'rgba(0,204,122,.4)'},
+  {name:'Naver',urls:64156,works:22756,cls:'pub-other',color:'rgba(122,155,191,.3)'},
+  {name:'Ichijinsha (一迅社)',urls:58156,works:15378,cls:'pub-kadokawa',color:'rgba(107,79,255,.4)'}
+];
+
+const maxUrls=vulnData[0].urls;
+const vulnEl=document.getElementById('vulnChart');
+vulnData.forEach(d=>{
+  const pct=Math.max(5,(d.urls/maxUrls)*100);
+  vulnEl.innerHTML+=`
+    <div class="vuln-row">
+      <div class="vuln-label">${d.name}</div>
+      <div class="vuln-pub ${d.cls}">${d.works.toLocaleString()} works</div>
+      <div class="vuln-bar-wrap"><div class="vuln-bar" style="width:${pct}%;background:${d.color}">${(d.urls/1000).toFixed(0)}K URLs</div></div>
+    </div>`;
+});
+
+/* ===== TOP 50 TABLE ===== */
+const titles=[
+  {rank:1,title:'Rent-a-Girlfriend (彼女、お借りします)',publisher:'Kodansha',domains:124,urls:124,type:'doujinshi',sev:5},
+  {rank:2,title:'One Punch Man (ワンパンマン)',publisher:'Shueisha',domains:122,urls:122,type:'doujinshi',sev:5},
+  {rank:3,title:'ONE PIECE',publisher:'Shueisha',domains:117,urls:117,type:'manga',sev:5},
+  {rank:4,title:'Nagatoro-san (イジらないで、長瀞さん)',publisher:'Kodansha',domains:115,urls:115,type:'doujinshi',sev:5},
+  {rank:5,title:'Kingdom',publisher:'Shueisha',domains:114,urls:114,type:'manga',sev:5},
+  {rank:6,title:'Black Clover',publisher:'Shueisha',domains:111,urls:111,type:'doujinshi',sev:5},
+  {rank:7,title:'One Piece (doujinshi)',publisher:'Shueisha',domains:101,urls:101,type:'doujinshi',sev:5},
+  {rank:8,title:'Blue Lock (ブルーロック)',publisher:'Kodansha',domains:100,urls:100,type:'manga',sev:5},
+  {rank:9,title:'Kagurabachi',publisher:'Shueisha',domains:99,urls:99,type:'manga',sev:5},
+  {rank:10,title:'H2 (エイチツー)',publisher:'Shogakukan',domains:97,urls:97,type:'manga',sev:4},
+  {rank:11,title:'Blue Lock',publisher:'Kodansha',domains:96,urls:96,type:'manga',sev:5},
+  {rank:12,title:'Chainsaw Man',publisher:'Shueisha',domains:95,urls:95,type:'manga',sev:5},
+  {rank:13,title:'Wind Breaker',publisher:'Kodansha',domains:92,urls:92,type:'manga',sev:4},
+  {rank:14,title:'Goblin Slayer',publisher:'Square Enix',domains:91,urls:91,type:'doujinshi',sev:4},
+  {rank:15,title:'Sakamoto Days',publisher:'Shueisha',domains:90,urls:90,type:'manga',sev:5},
+  {rank:16,title:'Chainsaw Man (doujinshi)',publisher:'Shueisha',domains:90,urls:90,type:'doujinshi',sev:5},
+  {rank:17,title:'One Punch Man',publisher:'Shueisha',domains:86,urls:86,type:'manga',sev:5},
+  {rank:18,title:'Naruto',publisher:'Shueisha',domains:84,urls:84,type:'manga',sev:5},
+  {rank:19,title:'Made In Abyss',publisher:'Takeshobo',domains:84,urls:84,type:'manga',sev:4},
+  {rank:20,title:'That Time I Got Reincarnated as a Slime',publisher:'Micro Magazine',domains:84,urls:84,type:'manga',sev:4},
+  {rank:21,title:'Black Clover',publisher:'Shueisha',domains:83,urls:83,type:'manga',sev:5},
+  {rank:22,title:'Edens Zero',publisher:'Kodansha',domains:81,urls:81,type:'manga',sev:4},
+  {rank:23,title:'My Hero Academia (Boku No Hero Academia)',publisher:'Shueisha',domains:80,urls:80,type:'doujinshi',sev:5},
+  {rank:24,title:'Sakamoto Days',publisher:'Shueisha',domains:80,urls:80,type:'manga',sev:5},
+  {rank:25,title:'Grand Blue (ぐらんぶる)',publisher:'Kodansha',domains:79,urls:79,type:'doujinshi',sev:4},
+  {rank:26,title:'Golden Kamuy (ゴールデンカムイ)',publisher:'Shueisha',domains:78,urls:78,type:'manga',sev:4},
+  {rank:27,title:'Tsukimichi -Moonlit Fantasy-',publisher:'AlphaPolis',domains:78,urls:78,type:'manga',sev:3},
+  {rank:28,title:'Solo Leveling: Ragnarok',publisher:'Kakao',domains:78,urls:78,type:'manga',sev:4},
+  {rank:29,title:'Dandadan',publisher:'Shueisha',domains:78,urls:78,type:'manga',sev:5},
+  {rank:30,title:'Kagurabachi',publisher:'Shueisha',domains:78,urls:78,type:'manga',sev:5},
+  {rank:31,title:'The Apothecary Diaries (薬屋のひとりごと)',publisher:'Square Enix',domains:76,urls:76,type:'doujinshi',sev:4},
+  {rank:32,title:'Redo of Healer',publisher:'KADOKAWA',domains:76,urls:76,type:'manga',sev:3},
+  {rank:33,title:'The Black Summoner',publisher:'Overlap',domains:76,urls:76,type:'manga',sev:3},
+  {rank:34,title:'Saga of Tanya the Evil (幼女戦記)',publisher:'Enterbrain',domains:75,urls:75,type:'doujinshi',sev:4},
+  {rank:35,title:'Seraph of the End (終わりのセラフ)',publisher:'Shueisha',domains:75,urls:75,type:'manga',sev:4},
+  {rank:36,title:'The New Gate',publisher:'One Peace Books',domains:74,urls:74,type:'manga',sev:3},
+  {rank:37,title:'A Soldier Dreams of the Past',publisher:'AlphaPolis',domains:74,urls:74,type:'manga',sev:3},
+  {rank:38,title:'Fairy Tail',publisher:'Kodansha',domains:73,urls:73,type:'doujinshi',sev:4},
+  {rank:39,title:'Uzaki-chan Wants to Hang Out! (宇崎ちゃんは遊びたい)',publisher:'Fujimi Shobo',domains:73,urls:73,type:'doujinshi',sev:4},
+  {rank:40,title:'Isekai Tensei Soudouki',publisher:'AlphaPolis',domains:73,urls:73,type:'manga',sev:3},
+  {rank:41,title:'Attack on Titan (進撃の巨人)',publisher:'Kodansha',domains:73,urls:73,type:'doujinshi',sev:5},
+  {rank:42,title:'Jujutsu Kaisen',publisher:'Shueisha',domains:73,urls:73,type:'manga',sev:5},
+  {rank:43,title:'Dr. Stone',publisher:'Panini',domains:72,urls:72,type:'manga',sev:4},
+  {rank:44,title:'Farming Life in Another World',publisher:'Fujimi Shobo',domains:72,urls:72,type:'manga',sev:3},
+  {rank:45,title:'DEAD ROCK',publisher:'Kodansha',domains:72,urls:72,type:'manga',sev:4},
+  {rank:46,title:'Jujutsu Kaisen (doujinshi)',publisher:'Shueisha',domains:72,urls:72,type:'doujinshi',sev:5},
+  {rank:47,title:'Berserk',publisher:'Hakusensha',domains:72,urls:72,type:'manga',sev:4},
+  {rank:48,title:'Rosen Garten Saga',publisher:'Tokuma Shoten',domains:71,urls:71,type:'manga',sev:3},
+  {rank:49,title:'My Hero Academia',publisher:'Shueisha',domains:71,urls:71,type:'manga',sev:5},
+  {rank:50,title:'Dragon Ball Super',publisher:'Shueisha',domains:70,urls:70,type:'manga',sev:5}
+];
+
+let sortCol='rank',sortAsc=true;
+
+function renderTable(){
+  const tbody=document.getElementById('titlesBody');
+  const sorted=[...titles].sort((a,b)=>{
+    const va=a[sortCol],vb=b[sortCol];
+    if(typeof va==='number') return sortAsc?va-vb:vb-va;
+    return sortAsc?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
+  });
+  tbody.innerHTML=sorted.map(t=>{
+    const sevClass=t.sev>=5?'sev-5':t.sev>=4?'sev-4':t.sev>=3?'sev-3':'sev-2';
+    return `<tr>
+      <td class="mono" style="color:var(--text-3)">${t.rank}</td>
+      <td><strong>${t.title}</strong></td>
+      <td>${t.publisher}</td>
+      <td class="mono" style="color:var(--primary)">${t.domains}</td>
+      <td class="mono">${t.urls}</td>
+      <td><span style="font-family:var(--font-mono);font-size:.75rem;padding:.15rem .4rem;border-radius:4px;background:var(--bg-3)">${t.type}</span></td>
+      <td><span class="sev ${sevClass}">${t.sev}</span></td>
+    </tr>`;
+  }).join('');
+}
+renderTable();
+
+document.querySelectorAll('#titlesTable th').forEach(th=>{
+  th.addEventListener('click',()=>{
+    const col=th.dataset.col;
+    if(sortCol===col) sortAsc=!sortAsc;
+    else{sortCol=col;sortAsc=true;}
+    document.querySelectorAll('#titlesTable th').forEach(h=>h.classList.remove('sorted'));
+    th.classList.add('sorted');
+    th.querySelector('.sort-arrow').textContent=sortAsc?'\u25B2':'\u25BC';
+    renderTable();
+  });
+});
+</script>
+</body>
+</html>
