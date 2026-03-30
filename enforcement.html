@@ -157,6 +157,11 @@ tr:hover td{background:rgba(26,140,255,.04)}
     <p>Priority Matrix &times; Domain Takedown Intelligence &times; DMCA Workflow</p>
   </div>
 
+  <!-- Methodology Note -->
+  <div class="card" style="border:1px solid rgba(255,170,0,.2);padding:1rem 1.5rem;margin-bottom:1.5rem">
+    <div style="font-size:.8rem;color:var(--warning);font-family:var(--font-mono);line-height:1.7">[NOTE] Each row represents a work-level (series) page URL. Most manga series contain 50&ndash;1,000+ chapter pages. The estimated total chapter-level infringement across all domains exceeds 50 million URLs.</div>
+  </div>
+
   <!-- KPIs -->
   <div class="kpi-row">
     <div class="kpi-card"><div class="label">Pirate URLs Indexed</div><div class="value red">7.63M</div></div>
@@ -233,7 +238,7 @@ tr:hover td{background:rgba(26,140,255,.04)}
         Enforcement Readiness by Publisher
       </div>
       <div class="chart-container" style="max-height:480px"><canvas id="publisherChart"></canvas></div>
-      <div class="chart-insight">Shueisha (310K URLs) and Kodansha (288K URLs) are the most pirated publishers. Combined Big 4 account for 1.06M identified pirate URLs.</div>
+      <div class="chart-insight">Shueisha (311K rows, 1,360 domains) and Kodansha (288K rows, 1,201 domains) are the most pirated publishers. Combined Big 4 account for 1.06M identified pirate rows.</div>
     </div>
   </div>
 
@@ -355,10 +360,10 @@ const pubData = [
   {name:'Kakao',urls:169867,works:45739},
   {name:'Naver Webtoon',urls:127096,works:33601},
   {name:'Kakao/Naver',urls:107612,works:44954},
-  {name:'Square Enix',urls:83839,works:22733},
-  {name:'Adult Independent',urls:80696,works:74454},
-  {name:'Kuaikan',urls:73369,works:20673},
-  {name:'Akita Shoten (秋田書店)',urls:67861,works:20687}
+  {name:'Square Enix (スクエニ)',urls:87108,works:22733},
+  {name:'Akita Shoten (秋田書店)',urls:67984,works:20687},
+  {name:'Hakusensha (白泉社)',urls:66643,works:19261},
+  {name:'Ichijinsha (一迅社)',urls:58731,works:15378}
 ];
 
 new Chart(document.getElementById('publisherChart').getContext('2d'),{

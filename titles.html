@@ -51,6 +51,7 @@ a:hover{text-decoration:underline}
 .chart-wrap-tall{height:520px}
 .insight{margin-top:1rem;padding:.8rem 1rem;background:var(--bg-3);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text-2)}
 .insight strong{color:var(--text-1)}
+.methodology-note{margin-top:1rem;padding:.8rem 1rem;background:rgba(255,170,0,.06);border:1px solid rgba(255,170,0,.15);border-radius:8px;font-size:.8rem;color:var(--warning);font-family:var(--font-mono);line-height:1.7}
 
 /* VULNERABILITY BARS */
 .vuln-chart{display:flex;flex-direction:column;gap:.45rem}
@@ -132,39 +133,45 @@ a:hover{text-decoration:underline}
 
   <div class="page-header">
     <h1>TITLE TRACKER</h1>
-    <p>Most Pirated Manga Titles &times; Publisher Vulnerability Analysis</p>
+    <p>Most Pirated Manga Titles &times; Publisher Vulnerability Analysis &mdash; Fuzzy-matched, All Variants Consolidated</p>
+  </div>
+
+  <!-- Methodology Note -->
+  <div class="card" style="border-color:rgba(255,170,0,.2)">
+    <div class="methodology-note">
+      [NOTE] Each row represents a work-level (series) page URL. Most manga series contain 50&ndash;1,000+ chapter pages. The estimated total chapter-level infringement across all domains exceeds 50 million URLs. Title counts below use fuzzy matching to consolidate all naming variants (e.g. "ONE PIECE", "One Piece", "OP doujinshi") into a single canonical entry.
+    </div>
   </div>
 
   <!-- 1. Most Pirated Titles Scatter -->
   <div class="card">
-    <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Piracy Exposure by Title</div>
-    <div class="card-subtitle">X: Pirate Domain Count &middot; Y: URL Count &middot; Color: Publisher</div>
+    <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Piracy Exposure by Title (Fuzzy-Consolidated)</div>
+    <div class="card-subtitle">X: Pirate Domain Count &middot; Y: Work-Level URL Count &middot; Bubble Size: Rows &middot; Color: Publisher</div>
     <div class="chart-wrap"><canvas id="chartScatter"></canvas></div>
-    <div class="insight"><strong>ONE PIECE variants appear on 117-122 pirate domains</strong> -- the most exposed title. Shueisha titles dominate the high-exposure quadrant, followed by Kodansha. Doujinshi variants often appear alongside official manga entries.</div>
+    <div class="insight"><strong>ONE PIECE appears on 553 pirate domains with 32,830 work-level URLs</strong> -- by far the most exposed title. Shueisha titles dominate the high-exposure quadrant. After fuzzy matching, the top 20 titles collectively appear on 6,000+ unique pirate domains.</div>
   </div>
 
   <!-- 2. Publisher Vulnerability -->
   <div class="card">
     <div class="card-title"><span class="dot" style="background:var(--warning)"></span>Publisher Vulnerability Ranking</div>
-    <div class="card-subtitle">Pirate URLs by publisher (top 15) &mdash; sorted by total exposure</div>
+    <div class="card-subtitle">Pirate rows by publisher (top 10) &mdash; sorted by total exposure &mdash; domains in parentheses</div>
     <div class="vuln-chart" id="vulnChart"></div>
-    <div class="vuln-note">Shueisha, Kodansha, KADOKAWA, and Shogakukan together account for 1.06M pirate URLs -- 14% of total indexed URLs. Unknown/unattributed URLs (4.2M) represent the largest enforcement gap.</div>
+    <div class="vuln-note">Shueisha, Kodansha, KADOKAWA, and Shogakukan together account for 1.06M pirate rows. Each row = one work-level URL on one domain.</div>
   </div>
 
-  <!-- 3. Top 50 Most Pirated Titles -->
+  <!-- 3. Top 20 Most Pirated Titles -->
   <div class="card">
-    <div class="card-title"><span class="dot" style="background:var(--danger)"></span>Top 50 Most Pirated Manga Titles</div>
-    <div class="card-subtitle">Ranked by number of pirate domains hosting each work &mdash; click headers to sort</div>
+    <div class="card-title"><span class="dot" style="background:var(--danger)"></span>Top 20 Most Pirated Manga Titles (Fuzzy-Consolidated)</div>
+    <div class="card-subtitle">Ranked by number of pirate domains hosting each work &mdash; all naming variants merged &mdash; click headers to sort</div>
     <div class="data-table-wrap">
       <table class="data-table" id="titlesTable">
         <thead>
           <tr>
             <th data-col="rank" data-type="num">Rank <span class="sort-arrow">&#9650;</span></th>
             <th data-col="title" data-type="str">Title <span class="sort-arrow">&#9650;</span></th>
-            <th data-col="publisher" data-type="str">Publisher <span class="sort-arrow">&#9650;</span></th>
             <th data-col="domains" data-type="num">Domains <span class="sort-arrow">&#9650;</span></th>
-            <th data-col="urls" data-type="num">URLs <span class="sort-arrow">&#9650;</span></th>
-            <th data-col="type" data-type="str">Content Type <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="urls" data-type="num">Work URLs <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="rows" data-type="num">Total Rows <span class="sort-arrow">&#9650;</span></th>
             <th data-col="sev" data-type="num">Sev <span class="sort-arrow">&#9650;</span></th>
           </tr>
         </thead>
@@ -176,22 +183,22 @@ a:hover{text-decoration:underline}
   <!-- 4. Impact Summary -->
   <div class="card">
     <div class="card-title"><span class="dot" style="background:var(--success)"></span>Piracy Impact Summary</div>
-    <div class="card-subtitle">Key metrics from enforcement_master_v11_FINAL</div>
+    <div class="card-subtitle">Key metrics from enforcement_master_v11_FINAL (fuzzy-consolidated)</div>
     <div class="cost-panel">
       <div class="cost-card">
         <div class="cc-label">Total Pirate URLs</div>
         <div class="cc-val" style="color:var(--danger)">7.63M</div>
-        <div class="cc-sub">Across 2,491 domains<br>Avg <strong style="color:var(--danger)">3,062</strong> URLs per domain</div>
+        <div class="cc-sub">Work-level URLs across 2,491 domains<br>Est. chapter-level: <strong style="color:var(--danger)">50M+</strong></div>
       </div>
       <div class="cost-card">
         <div class="cc-label">Most Exposed Title</div>
-        <div class="cc-val" style="color:var(--warning)">124</div>
-        <div class="cc-sub">Pirate domains hosting<br><strong style="color:var(--warning)">ONE PIECE</strong> (doujinshi)</div>
+        <div class="cc-val" style="color:var(--warning)">553</div>
+        <div class="cc-sub">Pirate domains hosting<br><strong style="color:var(--warning)">ONE PIECE</strong> (all variants)</div>
       </div>
       <div class="cost-card">
-        <div class="cc-label">Publisher Coverage</div>
-        <div class="cc-val" style="color:var(--accent)">59.4%</div>
-        <div class="cc-sub">URLs with known publisher<br><strong style="color:var(--accent)">4.53M</strong> of 7.63M total</div>
+        <div class="cc-label">Session Coverage</div>
+        <div class="cc-val" style="color:var(--accent)">92.4%</div>
+        <div class="cc-sub">Publishers affected: <strong style="color:var(--accent)">100+</strong><br>Content types: 7 categories</div>
       </div>
     </div>
   </div>
@@ -206,42 +213,34 @@ Chart.defaults.font.size=11;
 
 /* ===== SCATTER CHART ===== */
 const scatterData=[
-  {title:'ONE PIECE',pub:'Kodansha',domains:124,urls:124,color:'rgba(26,140,255,.7)'},
-  {title:'One Punch Man',pub:'Shueisha',domains:122,urls:122,color:'rgba(255,51,68,.7)'},
-  {title:'ONE PIECE',pub:'Shueisha',domains:117,urls:117,color:'rgba(255,51,68,.7)'},
-  {title:'Nagatoro-san',pub:'Kodansha',domains:115,urls:115,color:'rgba(26,140,255,.7)'},
-  {title:'Kingdom',pub:'Shueisha',domains:114,urls:114,color:'rgba(255,51,68,.7)'},
-  {title:'Black Clover',pub:'Shueisha',domains:111,urls:111,color:'rgba(255,51,68,.7)'},
-  {title:'Blue Lock',pub:'Kodansha',domains:100,urls:100,color:'rgba(26,140,255,.7)'},
-  {title:'Kagurabachi',pub:'Shueisha',domains:99,urls:99,color:'rgba(255,51,68,.7)'},
-  {title:'H2',pub:'Shogakukan',domains:97,urls:97,color:'rgba(0,204,122,.7)'},
-  {title:'Chainsaw Man',pub:'Shueisha',domains:95,urls:95,color:'rgba(255,51,68,.7)'},
-  {title:'Wind Breaker',pub:'Kodansha',domains:92,urls:92,color:'rgba(26,140,255,.7)'},
-  {title:'Goblin Slayer',pub:'Square Enix',domains:91,urls:91,color:'rgba(255,170,0,.7)'},
-  {title:'Sakamoto Days',pub:'Shueisha',domains:90,urls:90,color:'rgba(255,51,68,.7)'},
-  {title:'Naruto',pub:'Shueisha',domains:84,urls:84,color:'rgba(255,51,68,.7)'},
-  {title:'Made In Abyss',pub:'Takeshobo',domains:84,urls:84,color:'rgba(122,155,191,.7)'},
-  {title:'Slime Tensei',pub:'Micro Mag',domains:84,urls:84,color:'rgba(122,155,191,.7)'},
-  {title:'Edens Zero',pub:'Kodansha',domains:81,urls:81,color:'rgba(26,140,255,.7)'},
-  {title:'My Hero Academia',pub:'Shueisha',domains:80,urls:80,color:'rgba(255,51,68,.7)'},
-  {title:'Golden Kamuy',pub:'Shueisha',domains:78,urls:78,color:'rgba(255,51,68,.7)'},
-  {title:'Dandadan',pub:'Shueisha',domains:78,urls:78,color:'rgba(255,51,68,.7)'}
+  {title:'ONE PIECE',domains:553,urls:32830,rows:33299,color:'rgba(255,51,68,.7)'},
+  {title:'Kingdom',domains:559,urls:10398,rows:11697,color:'rgba(255,51,68,.7)'},
+  {title:'NARUTO',domains:453,urls:15979,rows:16508,color:'rgba(255,51,68,.7)'},
+  {title:'Jujutsu Kaisen',domains:434,urls:8163,rows:8922,color:'rgba(255,51,68,.7)'},
+  {title:'Blue Lock',domains:403,urls:6379,rows:6489,color:'rgba(26,140,255,.7)'},
+  {title:'DRAGON BALL',domains:393,urls:10091,rows:10529,color:'rgba(255,51,68,.7)'},
+  {title:'Chainsaw Man',domains:392,urls:4327,rows:4646,color:'rgba(255,51,68,.7)'},
+  {title:'My Hero Academia',domains:385,urls:12714,rows:13220,color:'rgba(255,51,68,.7)'},
+  {title:'Demon Slayer',domains:363,urls:5517,rows:5750,color:'rgba(255,51,68,.7)'},
+  {title:'One Punch Man',domains:358,urls:5766,rows:5898,color:'rgba(255,51,68,.7)'},
+  {title:'Attack on Titan',domains:333,urls:5855,rows:6108,color:'rgba(26,140,255,.7)'},
+  {title:'BLEACH',domains:330,urls:10938,rows:11053,color:'rgba(255,51,68,.7)'},
+  {title:'SPY x FAMILY',domains:329,urls:2580,rows:2654,color:'rgba(255,51,68,.7)'},
+  {title:'HUNTER x HUNTER',domains:283,urls:5473,rows:5520,color:'rgba(255,51,68,.7)'},
+  {title:'Haikyu!!',domains:243,urls:5784,rows:6081,color:'rgba(255,51,68,.7)'},
+  {title:'Tokyo Revengers',domains:238,urls:2663,rows:2998,color:'rgba(26,140,255,.7)'},
+  {title:'Fullmetal Alchemist',domains:210,urls:1883,rows:1983,color:'rgba(0,204,122,.7)'},
+  {title:'DEATH NOTE',domains:202,urls:1480,rows:1502,color:'rgba(255,51,68,.7)'},
+  {title:'Detective Conan',domains:198,urls:2155,rows:2224,color:'rgba(0,204,122,.7)'},
+  {title:'SLAM DUNK',domains:139,urls:393,rows:401,color:'rgba(255,51,68,.7)'}
 ];
-
-const pubColors = {
-  'Shueisha':'rgba(255,51,68,.5)',
-  'Kodansha':'rgba(26,140,255,.5)',
-  'Square Enix':'rgba(255,170,0,.5)',
-  'Shogakukan':'rgba(0,204,122,.5)',
-  'KADOKAWA':'rgba(107,79,255,.5)'
-};
 
 new Chart(document.getElementById('chartScatter').getContext('2d'),{
   type:'bubble',
   data:{
     datasets: scatterData.map(d=>({
       label:d.title,
-      data:[{x:d.domains,y:d.urls,r:Math.max(6,d.domains/10)}],
+      data:[{x:d.domains,y:d.urls,r:Math.max(6,Math.sqrt(d.rows)/4)}],
       backgroundColor:d.color.replace(/[\d.]+\)$/,'.35)'),
       borderColor:d.color,
       borderWidth:2
@@ -255,103 +254,69 @@ new Chart(document.getElementById('chartScatter').getContext('2d'),{
         callbacks:{
           title:ctx=>{const d=scatterData[ctx[0].datasetIndex]; return d.title;},
           label:ctx=>{const d=scatterData[ctx.datasetIndex]; return [
-            `Publisher: ${d.pub}`,
-            `Pirate Domains: ${d.domains}`,
-            `Total URLs: ${d.urls}`
+            `Pirate Domains: ${d.domains.toLocaleString()}`,
+            `Work URLs: ${d.urls.toLocaleString()}`,
+            `Total Rows: ${d.rows.toLocaleString()}`
           ];}
         }
       }
     },
     scales:{
-      x:{title:{display:true,text:'Number of Pirate Domains'},grid:{color:'rgba(26,140,255,.06)'}},
-      y:{title:{display:true,text:'Total Pirate URLs'},grid:{color:'rgba(26,140,255,.06)'},min:60}
+      x:{title:{display:true,text:'Number of Pirate Domains (fuzzy-consolidated)'},grid:{color:'rgba(26,140,255,.06)'}},
+      y:{title:{display:true,text:'Work-Level Pirate URLs'},grid:{color:'rgba(26,140,255,.06)'}}
     }
   }
 });
 
 /* ===== VULNERABILITY BARS ===== */
 const vulnData=[
-  {name:'Shueisha (集英社)',urls:310927,works:118902,cls:'pub-shueisha',color:'rgba(255,51,68,.6)'},
-  {name:'Kodansha (講談社)',urls:288491,works:88585,cls:'pub-kodansha',color:'rgba(26,140,255,.6)'},
-  {name:'KADOKAWA',urls:241820,works:60416,cls:'pub-kadokawa',color:'rgba(107,79,255,.55)'},
-  {name:'Shogakukan (小学館)',urls:223139,works:84547,cls:'pub-shogakukan',color:'rgba(0,204,122,.5)'},
-  {name:'Doujin/Independent',urls:178705,works:167079,cls:'pub-other',color:'rgba(122,155,191,.5)'},
-  {name:'Kakao',urls:169867,works:45739,cls:'pub-other',color:'rgba(122,155,191,.45)'},
-  {name:'Naver Webtoon',urls:127096,works:33601,cls:'pub-other',color:'rgba(122,155,191,.4)'},
-  {name:'Kakao/Naver',urls:107612,works:44954,cls:'pub-other',color:'rgba(122,155,191,.35)'},
-  {name:'Square Enix',urls:83839,works:22733,cls:'pub-sqenix',color:'rgba(255,170,0,.5)'},
-  {name:'Adult Independent',urls:80696,works:74454,cls:'pub-other',color:'rgba(122,155,191,.3)'},
-  {name:'Kuaikan',urls:73369,works:20673,cls:'pub-other',color:'rgba(122,155,191,.3)'},
-  {name:'Akita Shoten (秋田書店)',urls:67861,works:20687,cls:'pub-shueisha',color:'rgba(255,51,68,.4)'},
-  {name:'Hakusensha (白泉社)',urls:66928,works:19261,cls:'pub-shogakukan',color:'rgba(0,204,122,.4)'},
-  {name:'Naver',urls:64156,works:22756,cls:'pub-other',color:'rgba(122,155,191,.3)'},
-  {name:'Ichijinsha (一迅社)',urls:58156,works:15378,cls:'pub-kadokawa',color:'rgba(107,79,255,.4)'}
+  {name:'Shueisha (集英社)',rows:310927,domains:1360,cls:'pub-shueisha',color:'rgba(255,51,68,.6)'},
+  {name:'Kodansha (講談社)',rows:288491,domains:1201,cls:'pub-kodansha',color:'rgba(26,140,255,.6)'},
+  {name:'KADOKAWA',rows:241820,domains:931,cls:'pub-kadokawa',color:'rgba(107,79,255,.55)'},
+  {name:'Shogakukan (小学館)',rows:223139,domains:1156,cls:'pub-shogakukan',color:'rgba(0,204,122,.5)'},
+  {name:'Kakao',rows:169867,domains:891,cls:'pub-other',color:'rgba(122,155,191,.45)'},
+  {name:'Naver Webtoon',rows:127096,domains:920,cls:'pub-other',color:'rgba(122,155,191,.4)'},
+  {name:'Square Enix (スクエニ)',rows:87108,domains:0,cls:'pub-sqenix',color:'rgba(255,170,0,.5)'},
+  {name:'Akita Shoten (秋田書店)',rows:67984,domains:0,cls:'pub-shueisha',color:'rgba(255,51,68,.4)'},
+  {name:'Hakusensha (白泉社)',rows:66643,domains:0,cls:'pub-shogakukan',color:'rgba(0,204,122,.4)'},
+  {name:'Ichijinsha (一迅社)',rows:58731,domains:0,cls:'pub-kadokawa',color:'rgba(107,79,255,.4)'}
 ];
 
-const maxUrls=vulnData[0].urls;
+const maxRows=vulnData[0].rows;
 const vulnEl=document.getElementById('vulnChart');
 vulnData.forEach(d=>{
-  const pct=Math.max(5,(d.urls/maxUrls)*100);
+  const pct=Math.max(5,(d.rows/maxRows)*100);
+  const domainInfo = d.domains > 0 ? ` (${d.domains.toLocaleString()} domains)` : '';
   vulnEl.innerHTML+=`
     <div class="vuln-row">
       <div class="vuln-label">${d.name}</div>
-      <div class="vuln-pub ${d.cls}">${d.works.toLocaleString()} works</div>
-      <div class="vuln-bar-wrap"><div class="vuln-bar" style="width:${pct}%;background:${d.color}">${(d.urls/1000).toFixed(0)}K URLs</div></div>
+      <div class="vuln-pub ${d.cls}">${(d.rows/1000).toFixed(0)}K rows</div>
+      <div class="vuln-bar-wrap"><div class="vuln-bar" style="width:${pct}%;background:${d.color}">${(d.rows/1000).toFixed(0)}K${domainInfo}</div></div>
     </div>`;
 });
 
-/* ===== TOP 50 TABLE ===== */
+/* ===== TOP 20 TABLE ===== */
 const titles=[
-  {rank:1,title:'ONE PIECE (彼女、お借りします)',publisher:'Kodansha',domains:124,urls:124,type:'doujinshi',sev:5},
-  {rank:2,title:'One Punch Man (ワンパンマン)',publisher:'Shueisha',domains:122,urls:122,type:'doujinshi',sev:5},
-  {rank:3,title:'ONE PIECE',publisher:'Shueisha',domains:117,urls:117,type:'manga',sev:5},
-  {rank:4,title:'Nagatoro-san (イジらないで、長瀞さん)',publisher:'Kodansha',domains:115,urls:115,type:'doujinshi',sev:5},
-  {rank:5,title:'Kingdom',publisher:'Shueisha',domains:114,urls:114,type:'manga',sev:5},
-  {rank:6,title:'Black Clover',publisher:'Shueisha',domains:111,urls:111,type:'doujinshi',sev:5},
-  {rank:7,title:'One Piece (doujinshi)',publisher:'Shueisha',domains:101,urls:101,type:'doujinshi',sev:5},
-  {rank:8,title:'Blue Lock (ブルーロック)',publisher:'Kodansha',domains:100,urls:100,type:'manga',sev:5},
-  {rank:9,title:'Kagurabachi',publisher:'Shueisha',domains:99,urls:99,type:'manga',sev:5},
-  {rank:10,title:'H2 (エイチツー)',publisher:'Shogakukan',domains:97,urls:97,type:'manga',sev:4},
-  {rank:11,title:'Blue Lock',publisher:'Kodansha',domains:96,urls:96,type:'manga',sev:5},
-  {rank:12,title:'Chainsaw Man',publisher:'Shueisha',domains:95,urls:95,type:'manga',sev:5},
-  {rank:13,title:'Wind Breaker',publisher:'Kodansha',domains:92,urls:92,type:'manga',sev:4},
-  {rank:14,title:'Goblin Slayer',publisher:'Square Enix',domains:91,urls:91,type:'doujinshi',sev:4},
-  {rank:15,title:'Sakamoto Days',publisher:'Shueisha',domains:90,urls:90,type:'manga',sev:5},
-  {rank:16,title:'Chainsaw Man (doujinshi)',publisher:'Shueisha',domains:90,urls:90,type:'doujinshi',sev:5},
-  {rank:17,title:'One Punch Man',publisher:'Shueisha',domains:86,urls:86,type:'manga',sev:5},
-  {rank:18,title:'Naruto',publisher:'Shueisha',domains:84,urls:84,type:'manga',sev:5},
-  {rank:19,title:'Made In Abyss',publisher:'Takeshobo',domains:84,urls:84,type:'manga',sev:4},
-  {rank:20,title:'That Time I Got Reincarnated as a Slime',publisher:'Micro Magazine',domains:84,urls:84,type:'manga',sev:4},
-  {rank:21,title:'Black Clover',publisher:'Shueisha',domains:83,urls:83,type:'manga',sev:5},
-  {rank:22,title:'Edens Zero',publisher:'Kodansha',domains:81,urls:81,type:'manga',sev:4},
-  {rank:23,title:'My Hero Academia (Boku No Hero Academia)',publisher:'Shueisha',domains:80,urls:80,type:'doujinshi',sev:5},
-  {rank:24,title:'Sakamoto Days',publisher:'Shueisha',domains:80,urls:80,type:'manga',sev:5},
-  {rank:25,title:'Grand Blue (ぐらんぶる)',publisher:'Kodansha',domains:79,urls:79,type:'doujinshi',sev:4},
-  {rank:26,title:'Golden Kamuy (ゴールデンカムイ)',publisher:'Shueisha',domains:78,urls:78,type:'manga',sev:4},
-  {rank:27,title:'Tsukimichi -Moonlit Fantasy-',publisher:'AlphaPolis',domains:78,urls:78,type:'manga',sev:3},
-  {rank:28,title:'Solo Leveling: Ragnarok',publisher:'Kakao',domains:78,urls:78,type:'manga',sev:4},
-  {rank:29,title:'Dandadan',publisher:'Shueisha',domains:78,urls:78,type:'manga',sev:5},
-  {rank:30,title:'Kagurabachi',publisher:'Shueisha',domains:78,urls:78,type:'manga',sev:5},
-  {rank:31,title:'The Apothecary Diaries (薬屋のひとりごと)',publisher:'Square Enix',domains:76,urls:76,type:'doujinshi',sev:4},
-  {rank:32,title:'Redo of Healer',publisher:'KADOKAWA',domains:76,urls:76,type:'manga',sev:3},
-  {rank:33,title:'The Black Summoner',publisher:'Overlap',domains:76,urls:76,type:'manga',sev:3},
-  {rank:34,title:'Saga of Tanya the Evil (幼女戦記)',publisher:'Enterbrain',domains:75,urls:75,type:'doujinshi',sev:4},
-  {rank:35,title:'Seraph of the End (終わりのセラフ)',publisher:'Shueisha',domains:75,urls:75,type:'manga',sev:4},
-  {rank:36,title:'The New Gate',publisher:'One Peace Books',domains:74,urls:74,type:'manga',sev:3},
-  {rank:37,title:'A Soldier Dreams of the Past',publisher:'AlphaPolis',domains:74,urls:74,type:'manga',sev:3},
-  {rank:38,title:'Fairy Tail',publisher:'Kodansha',domains:73,urls:73,type:'doujinshi',sev:4},
-  {rank:39,title:'Uzaki-chan Wants to Hang Out! (宇崎ちゃんは遊びたい)',publisher:'Fujimi Shobo',domains:73,urls:73,type:'doujinshi',sev:4},
-  {rank:40,title:'Isekai Tensei Soudouki',publisher:'AlphaPolis',domains:73,urls:73,type:'manga',sev:3},
-  {rank:41,title:'Attack on Titan (進撃の巨人)',publisher:'Kodansha',domains:73,urls:73,type:'doujinshi',sev:5},
-  {rank:42,title:'Jujutsu Kaisen',publisher:'Shueisha',domains:73,urls:73,type:'manga',sev:5},
-  {rank:43,title:'Dr. Stone',publisher:'Panini',domains:72,urls:72,type:'manga',sev:4},
-  {rank:44,title:'Farming Life in Another World',publisher:'Fujimi Shobo',domains:72,urls:72,type:'manga',sev:3},
-  {rank:45,title:'DEAD ROCK',publisher:'Kodansha',domains:72,urls:72,type:'manga',sev:4},
-  {rank:46,title:'Jujutsu Kaisen (doujinshi)',publisher:'Shueisha',domains:72,urls:72,type:'doujinshi',sev:5},
-  {rank:47,title:'Berserk',publisher:'Hakusensha',domains:72,urls:72,type:'manga',sev:4},
-  {rank:48,title:'Rosen Garten Saga',publisher:'Tokuma Shoten',domains:71,urls:71,type:'manga',sev:3},
-  {rank:49,title:'My Hero Academia',publisher:'Shueisha',domains:71,urls:71,type:'manga',sev:5},
-  {rank:50,title:'Dragon Ball Super',publisher:'Shueisha',domains:70,urls:70,type:'manga',sev:5}
+  {rank:1,title:'ONE PIECE',domains:553,urls:32830,rows:33299,sev:5},
+  {rank:2,title:'キングダム / Kingdom',domains:559,urls:10398,rows:11697,sev:5},
+  {rank:3,title:'NARUTO',domains:453,urls:15979,rows:16508,sev:5},
+  {rank:4,title:'呪術廻戦 / Jujutsu Kaisen',domains:434,urls:8163,rows:8922,sev:5},
+  {rank:5,title:'ブルーロック / Blue Lock',domains:403,urls:6379,rows:6489,sev:5},
+  {rank:6,title:'DRAGON BALL',domains:393,urls:10091,rows:10529,sev:5},
+  {rank:7,title:'チェンソーマン / Chainsaw Man',domains:392,urls:4327,rows:4646,sev:5},
+  {rank:8,title:'僕のヒーローアカデミア / My Hero Academia',domains:385,urls:12714,rows:13220,sev:5},
+  {rank:9,title:'鬼滅の刃 / Demon Slayer',domains:363,urls:5517,rows:5750,sev:5},
+  {rank:10,title:'ワンパンマン / One Punch Man',domains:358,urls:5766,rows:5898,sev:5},
+  {rank:11,title:'進撃の巨人 / Attack on Titan',domains:333,urls:5855,rows:6108,sev:5},
+  {rank:12,title:'BLEACH',domains:330,urls:10938,rows:11053,sev:5},
+  {rank:13,title:'SPY\u00d7FAMILY',domains:329,urls:2580,rows:2654,sev:5},
+  {rank:14,title:'HUNTER\u00d7HUNTER',domains:283,urls:5473,rows:5520,sev:5},
+  {rank:15,title:'ハイキュー!! / Haikyu!!',domains:243,urls:5784,rows:6081,sev:4},
+  {rank:16,title:'東京卍リベンジャーズ / Tokyo Revengers',domains:238,urls:2663,rows:2998,sev:4},
+  {rank:17,title:'鋼の錬金術師 / Fullmetal Alchemist',domains:210,urls:1883,rows:1983,sev:4},
+  {rank:18,title:'DEATH NOTE',domains:202,urls:1480,rows:1502,sev:4},
+  {rank:19,title:'名探偵コナン / Detective Conan',domains:198,urls:2155,rows:2224,sev:4},
+  {rank:20,title:'SLAM DUNK',domains:139,urls:393,rows:401,sev:4}
 ];
 
 let sortCol='rank',sortAsc=true;
@@ -368,10 +333,9 @@ function renderTable(){
     return `<tr>
       <td class="mono" style="color:var(--text-3)">${t.rank}</td>
       <td><strong>${t.title}</strong></td>
-      <td>${t.publisher}</td>
-      <td class="mono" style="color:var(--primary)">${t.domains}</td>
-      <td class="mono">${t.urls}</td>
-      <td><span style="font-family:var(--font-mono);font-size:.75rem;padding:.15rem .4rem;border-radius:4px;background:var(--bg-3)">${t.type}</span></td>
+      <td class="mono" style="color:var(--primary)">${t.domains.toLocaleString()}</td>
+      <td class="mono">${t.urls.toLocaleString()}</td>
+      <td class="mono">${t.rows.toLocaleString()}</td>
       <td><span class="sev ${sevClass}">${t.sev}</span></td>
     </tr>`;
   }).join('');

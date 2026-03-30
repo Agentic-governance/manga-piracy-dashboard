@@ -109,12 +109,17 @@ a:hover{text-decoration:underline}
     <p>Content Distribution &times; Dataset Growth &times; Publisher Coverage</p>
   </div>
 
+  <!-- Methodology Note -->
+  <div class="card" style="border-color:rgba(255,170,0,.2);padding:1rem 1.5rem">
+    <div style="font-size:.8rem;color:var(--warning);font-family:var(--font-mono);line-height:1.7">[NOTE] Each row represents a work-level (series) page URL. Most manga series contain 50&ndash;1,000+ chapter pages. The estimated total chapter-level infringement across all domains exceeds 50 million URLs.</div>
+  </div>
+
   <!-- KPIs -->
-  <div class="kpi-row">
+  <div class="kpi-row" style="margin-top:1.5rem">
     <div class="kpi-card"><div class="label">Manga URLs</div><div class="value" style="color:var(--primary)">5.25M</div></div>
     <div class="kpi-card"><div class="label">Doujinshi URLs</div><div class="value" style="color:var(--secondary)">1.87M</div></div>
     <div class="kpi-card"><div class="label">Domain Growth v10→v11</div><div class="value" style="color:var(--success)">+55%</div></div>
-    <div class="kpi-card"><div class="label">Content Types</div><div class="value" style="color:var(--accent)">8</div></div>
+    <div class="kpi-card"><div class="label">Content Types</div><div class="value" style="color:var(--accent)">7</div></div>
   </div>
 
   <!-- 1. Content Type Distribution -->
@@ -122,7 +127,7 @@ a:hover{text-decoration:underline}
     <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Content Type Distribution</div>
     <div class="card-subtitle">7.63M total pirate URLs by content category</div>
     <div class="chart-wrap"><canvas id="chartContentType"></canvas></div>
-    <div class="insight"><strong>Manga dominates at 68.8%</strong> (5.25M URLs), followed by doujinshi at 24.5% (1.87M). Manhwa represents a growing 3.4% segment driven by Korean webtoon piracy. Gravure, magazine, and adult content collectively make up 2.7%.</div>
+    <div class="insight"><strong>Manga dominates at 68.8%</strong> (5.25M work-level URLs), followed by doujinshi at 24.5% (1.87M). Manhwa represents a growing 3.4% segment driven by Korean webtoon piracy. Gravure (1.0%), magazine (0.9%), adult (0.8%), and novel (0.6%) collectively make up 3.3%.</div>
   </div>
 
   <div class="grid-2">
@@ -187,8 +192,8 @@ a:hover{text-decoration:underline}
           <td>Content Types</td>
           <td class="mono">3</td>
           <td class="mono">5</td>
-          <td class="mono" style="color:var(--primary)">8</td>
-          <td class="mono" style="color:var(--success)">+167%</td>
+          <td class="mono" style="color:var(--primary)">7</td>
+          <td class="mono" style="color:var(--success)">+133%</td>
         </tr>
         <tr>
           <td>Publisher Attribution Rate</td>
@@ -221,10 +226,10 @@ Chart.defaults.font.size=11;
 new Chart(document.getElementById('chartContentType').getContext('2d'),{
   type:'bar',
   data:{
-    labels:['Manga','Doujinshi','Manhwa','Gravure','Magazine','Adult','Novel','Other'],
+    labels:['Manga','Doujinshi','Manhwa','Gravure','Magazine','Adult','Novel'],
     datasets:[{
       label:'Pirate URLs',
-      data:[5247670,1868462,260309,76850,68959,60242,45135,136],
+      data:[5247670,1868462,260309,76850,68959,60242,45135],
       backgroundColor:[
         'rgba(26,140,255,.7)',
         'rgba(107,79,255,.7)',
@@ -232,8 +237,7 @@ new Chart(document.getElementById('chartContentType').getContext('2d'),{
         'rgba(255,170,0,.6)',
         'rgba(255,51,68,.5)',
         'rgba(122,155,191,.5)',
-        'rgba(0,204,122,.5)',
-        'rgba(61,84,112,.4)'
+        'rgba(0,204,122,.5)'
       ],
       borderRadius:6,
       barPercentage:0.7
@@ -321,10 +325,10 @@ const jpPubs = [
   {name:'Kodansha',urls:288491},
   {name:'KADOKAWA',urls:241820},
   {name:'Shogakukan',urls:223139},
-  {name:'Square Enix',urls:83839},
-  {name:'Akita Shoten',urls:67861},
-  {name:'Hakusensha',urls:66928},
-  {name:'Ichijinsha',urls:58156},
+  {name:'Square Enix',urls:87108},
+  {name:'Akita Shoten',urls:67984},
+  {name:'Hakusensha',urls:66643},
+  {name:'Ichijinsha',urls:58731},
   {name:'Tokuma Shoten',urls:56530},
   {name:'Futabasha',urls:46667},
   {name:'Houbunsha',urls:45653},
