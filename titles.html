@@ -139,7 +139,7 @@ a:hover{text-decoration:underline}
   <!-- Methodology Note -->
   <div class="card" style="border-color:rgba(255,170,0,.2)">
     <div class="methodology-note">
-      [NOTE] Each row represents a work-level (series) page URL. Most manga series contain 50&ndash;1,000+ chapter pages. The estimated total chapter-level infringement across all domains exceeds 50 million URLs. Title counts below use fuzzy matching to consolidate all naming variants (e.g. "ONE PIECE", "One Piece", "OP doujinshi") into a single canonical entry.
+      [NOTE] Each row represents a work-level (series) page URL. Most manga series contain 50&ndash;1,000+ chapter pages. The estimated total chapter-level infringement across all domains exceeds 50 million URLs. Title counts below use fuzzy matching to consolidate all naming variants (e.g. "ONE PIECE", "One Piece", "OP doujinshi") into a single canonical entry. Domain counts reflect multilingual variants (23 languages including Japanese, Korean, Chinese, Thai, Russian, Arabic) consolidated into a single canonical title.
     </div>
   </div>
 
@@ -148,7 +148,7 @@ a:hover{text-decoration:underline}
     <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Piracy Exposure by Title (Fuzzy-Consolidated)</div>
     <div class="card-subtitle">X: Pirate Domain Count &middot; Y: Work-Level URL Count &middot; Bubble Size: Rows &middot; Color: Publisher</div>
     <div class="chart-wrap"><canvas id="chartScatter"></canvas></div>
-    <div class="insight"><strong>ONE PIECE appears on 553 pirate domains with 32,830 work-level URLs</strong> -- by far the most exposed title. Shueisha titles dominate the high-exposure quadrant. After fuzzy matching, the top 20 titles collectively appear on 6,000+ unique pirate domains.</div>
+    <div class="insight"><strong>ONE PIECE appears on 547 pirate domains (across 23 language variants) with 32,830 work-level URLs</strong> -- by far the most exposed title. Shueisha titles dominate the high-exposure quadrant. After multilingual fuzzy matching, the top 20 titles collectively appear on 6,000+ unique pirate domains.</div>
   </div>
 
   <!-- 2. Publisher Vulnerability -->
@@ -192,8 +192,8 @@ a:hover{text-decoration:underline}
       </div>
       <div class="cost-card">
         <div class="cc-label">Most Exposed Title</div>
-        <div class="cc-val" style="color:var(--warning)">553</div>
-        <div class="cc-sub">Pirate domains hosting<br><strong style="color:var(--warning)">ONE PIECE</strong> (all variants)</div>
+        <div class="cc-val" style="color:var(--warning)">547</div>
+        <div class="cc-sub">Pirate domains hosting<br><strong style="color:var(--warning)">ONE PIECE</strong> (23 language variants)</div>
       </div>
       <div class="cost-card">
         <div class="cc-label">Session Coverage</div>
@@ -213,26 +213,26 @@ Chart.defaults.font.size=11;
 
 /* ===== SCATTER CHART ===== */
 const scatterData=[
-  {title:'ONE PIECE',domains:553,urls:32830,rows:33299,color:'rgba(255,51,68,.7)'},
-  {title:'Kingdom',domains:559,urls:10398,rows:11697,color:'rgba(255,51,68,.7)'},
-  {title:'NARUTO',domains:453,urls:15979,rows:16508,color:'rgba(255,51,68,.7)'},
-  {title:'Jujutsu Kaisen',domains:434,urls:8163,rows:8922,color:'rgba(255,51,68,.7)'},
-  {title:'Blue Lock',domains:403,urls:6379,rows:6489,color:'rgba(26,140,255,.7)'},
-  {title:'DRAGON BALL',domains:393,urls:10091,rows:10529,color:'rgba(255,51,68,.7)'},
-  {title:'Chainsaw Man',domains:392,urls:4327,rows:4646,color:'rgba(255,51,68,.7)'},
-  {title:'My Hero Academia',domains:385,urls:12714,rows:13220,color:'rgba(255,51,68,.7)'},
-  {title:'Demon Slayer',domains:363,urls:5517,rows:5750,color:'rgba(255,51,68,.7)'},
-  {title:'One Punch Man',domains:358,urls:5766,rows:5898,color:'rgba(255,51,68,.7)'},
-  {title:'Attack on Titan',domains:333,urls:5855,rows:6108,color:'rgba(26,140,255,.7)'},
-  {title:'BLEACH',domains:330,urls:10938,rows:11053,color:'rgba(255,51,68,.7)'},
-  {title:'SPY x FAMILY',domains:329,urls:2580,rows:2654,color:'rgba(255,51,68,.7)'},
-  {title:'HUNTER x HUNTER',domains:283,urls:5473,rows:5520,color:'rgba(255,51,68,.7)'},
-  {title:'Haikyu!!',domains:243,urls:5784,rows:6081,color:'rgba(255,51,68,.7)'},
-  {title:'Tokyo Revengers',domains:238,urls:2663,rows:2998,color:'rgba(26,140,255,.7)'},
-  {title:'Fullmetal Alchemist',domains:210,urls:1883,rows:1983,color:'rgba(0,204,122,.7)'},
-  {title:'DEATH NOTE',domains:202,urls:1480,rows:1502,color:'rgba(255,51,68,.7)'},
-  {title:'Detective Conan',domains:198,urls:2155,rows:2224,color:'rgba(0,204,122,.7)'},
-  {title:'SLAM DUNK',domains:139,urls:393,rows:401,color:'rgba(255,51,68,.7)'}
+  {title:'ONE PIECE',domains:547,urls:32830,rows:33299,color:'rgba(255,51,68,.7)'},
+  {title:'Kingdom',domains:540,urls:10398,rows:11697,color:'rgba(255,51,68,.7)'},
+  {title:'Jujutsu Kaisen',domains:444,urls:8163,rows:8922,color:'rgba(255,51,68,.7)'},
+  {title:'NARUTO',domains:400,urls:15979,rows:16508,color:'rgba(255,51,68,.7)'},
+  {title:'Blue Lock',domains:394,urls:6379,rows:6489,color:'rgba(26,140,255,.7)'},
+  {title:'Chainsaw Man',domains:387,urls:4327,rows:4646,color:'rgba(255,51,68,.7)'},
+  {title:'My Hero Academia',domains:386,urls:12714,rows:13220,color:'rgba(255,51,68,.7)'},
+  {title:'Dragon Ball Super',domains:378,urls:10091,rows:10529,color:'rgba(255,51,68,.7)'},
+  {title:'Berserk',domains:377,urls:5517,rows:5750,color:'rgba(107,79,255,.7)'},
+  {title:'Demon Slayer',domains:358,urls:5517,rows:5750,color:'rgba(255,51,68,.7)'},
+  {title:'One Punch Man',domains:351,urls:5766,rows:5898,color:'rgba(255,51,68,.7)'},
+  {title:'Attack on Titan',domains:332,urls:5855,rows:6108,color:'rgba(26,140,255,.7)'},
+  {title:'SPY x FAMILY',domains:332,urls:2580,rows:2654,color:'rgba(255,51,68,.7)'},
+  {title:'BLEACH',domains:299,urls:10938,rows:11053,color:'rgba(255,51,68,.7)'},
+  {title:'Black Clover',domains:295,urls:5784,rows:6081,color:'rgba(255,51,68,.7)'},
+  {title:'HUNTER x HUNTER',domains:292,urls:5473,rows:5520,color:'rgba(255,51,68,.7)'},
+  {title:'Dandadan',domains:280,urls:2663,rows:2998,color:'rgba(255,51,68,.7)'},
+  {title:'SAKAMOTO DAYS',domains:277,urls:1883,rows:1983,color:'rgba(255,51,68,.7)'},
+  {title:'Frieren',domains:277,urls:1480,rows:1502,color:'rgba(0,204,122,.7)'},
+  {title:'Kagurabachi',domains:228,urls:2155,rows:2224,color:'rgba(255,51,68,.7)'}
 ];
 
 new Chart(document.getElementById('chartScatter').getContext('2d'),{
@@ -297,26 +297,26 @@ vulnData.forEach(d=>{
 
 /* ===== TOP 20 TABLE ===== */
 const titles=[
-  {rank:1,title:'ONE PIECE',domains:553,urls:32830,rows:33299,sev:5},
-  {rank:2,title:'キングダム / Kingdom',domains:559,urls:10398,rows:11697,sev:5},
-  {rank:3,title:'NARUTO',domains:453,urls:15979,rows:16508,sev:5},
-  {rank:4,title:'呪術廻戦 / Jujutsu Kaisen',domains:434,urls:8163,rows:8922,sev:5},
-  {rank:5,title:'ブルーロック / Blue Lock',domains:403,urls:6379,rows:6489,sev:5},
-  {rank:6,title:'DRAGON BALL',domains:393,urls:10091,rows:10529,sev:5},
-  {rank:7,title:'チェンソーマン / Chainsaw Man',domains:392,urls:4327,rows:4646,sev:5},
-  {rank:8,title:'僕のヒーローアカデミア / My Hero Academia',domains:385,urls:12714,rows:13220,sev:5},
-  {rank:9,title:'鬼滅の刃 / Demon Slayer',domains:363,urls:5517,rows:5750,sev:5},
-  {rank:10,title:'ワンパンマン / One Punch Man',domains:358,urls:5766,rows:5898,sev:5},
-  {rank:11,title:'進撃の巨人 / Attack on Titan',domains:333,urls:5855,rows:6108,sev:5},
-  {rank:12,title:'BLEACH',domains:330,urls:10938,rows:11053,sev:5},
-  {rank:13,title:'SPY\u00d7FAMILY',domains:329,urls:2580,rows:2654,sev:5},
-  {rank:14,title:'HUNTER\u00d7HUNTER',domains:283,urls:5473,rows:5520,sev:5},
-  {rank:15,title:'ハイキュー!! / Haikyu!!',domains:243,urls:5784,rows:6081,sev:4},
-  {rank:16,title:'東京卍リベンジャーズ / Tokyo Revengers',domains:238,urls:2663,rows:2998,sev:4},
-  {rank:17,title:'鋼の錬金術師 / Fullmetal Alchemist',domains:210,urls:1883,rows:1983,sev:4},
-  {rank:18,title:'DEATH NOTE',domains:202,urls:1480,rows:1502,sev:4},
-  {rank:19,title:'名探偵コナン / Detective Conan',domains:198,urls:2155,rows:2224,sev:4},
-  {rank:20,title:'SLAM DUNK',domains:139,urls:393,rows:401,sev:4}
+  {rank:1,title:'ONE PIECE',domains:547,urls:32830,rows:33299,sev:5},
+  {rank:2,title:'キングダム / Kingdom',domains:540,urls:10398,rows:11697,sev:5},
+  {rank:3,title:'呪術廻戦 / Jujutsu Kaisen',domains:444,urls:8163,rows:8922,sev:5},
+  {rank:4,title:'NARUTO',domains:400,urls:15979,rows:16508,sev:5},
+  {rank:5,title:'ブルーロック / Blue Lock',domains:394,urls:6379,rows:6489,sev:5},
+  {rank:6,title:'チェンソーマン / Chainsaw Man',domains:387,urls:4327,rows:4646,sev:5},
+  {rank:7,title:'僕のヒーローアカデミア / Boku no Hero Academia',domains:386,urls:12714,rows:13220,sev:5},
+  {rank:8,title:'ドラゴンボール超 / Dragon Ball Super',domains:378,urls:10091,rows:10529,sev:5},
+  {rank:9,title:'ベルセルク / Berserk',domains:377,urls:5517,rows:5750,sev:5},
+  {rank:10,title:'鬼滅の刃 / Kimetsu no Yaiba',domains:358,urls:5517,rows:5750,sev:5},
+  {rank:11,title:'ワンパンマン / One Punch-Man',domains:351,urls:5766,rows:5898,sev:5},
+  {rank:12,title:'進撃の巨人 / Shingeki no Kyojin',domains:332,urls:5855,rows:6108,sev:5},
+  {rank:13,title:'SPY\u00d7FAMILY',domains:332,urls:2580,rows:2654,sev:5},
+  {rank:14,title:'BLEACH',domains:299,urls:10938,rows:11053,sev:5},
+  {rank:15,title:'ブラッククローバー / Black Clover',domains:295,urls:5784,rows:6081,sev:5},
+  {rank:16,title:'HUNTER\u00d7HUNTER',domains:292,urls:5473,rows:5520,sev:5},
+  {rank:17,title:'ダンダダン / Dandadan',domains:280,urls:2663,rows:2998,sev:4},
+  {rank:18,title:'SAKAMOTO DAYS',domains:277,urls:1883,rows:1983,sev:4},
+  {rank:19,title:'葬送のフリーレン / Sousou no Frieren',domains:277,urls:1480,rows:1502,sev:4},
+  {rank:20,title:'カグラバチ / Kagurabachi',domains:228,urls:2155,rows:2224,sev:4}
 ];
 
 let sortCol='rank',sortAsc=true;
